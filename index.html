@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/main.css">
+    <title>To do List</title>
+</head>
+<body>
+    <section id="task">
+        <!-- Les tâches seront ajoutées ici dynamiquement par le JavaScript -->
+    </section>
+    <section id="add">
+        <form id="taskForm">
+            <input type="text" id="taskTitle" placeholder="Nom de la tâche">
+            <select id="taskPriority">
+                <option value="1">Élevée</option>
+                <option value="2">Normale</option>
+                <option value="3">Basse</option>
+            </select>
+            <button type="submit">Ajouter la tâche</button>
+        </form>
+        
+        <!-- Bouton de suppression des tâches cochées -->
+        <button id="deleteChecked">Supprimer</button>
+    
+    <!-- Zone de notification pour afficher le message -->
+<div id="notification" style="color: green;"></div> 
+    </section>
+    <script src="js/main.js"></script>
+</body>
+</html>

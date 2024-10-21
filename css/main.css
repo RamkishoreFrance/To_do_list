@@ -1,0 +1,11 @@
+.priority-high {
+    color: red;
+}
+
+.priority-normal {
+    color: green;
+}
+
+.priority-low {
+    color: blue;
+}
