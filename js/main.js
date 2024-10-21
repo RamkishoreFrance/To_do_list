@@ -1,4 +1,4 @@
-// Données initiales (Étape 1)
+// Données initiales des tâches
 const tasks = [
     {
         title: "Apprendre mon cours de JavaScript",
@@ -14,18 +14,18 @@ const tasks = [
     }
 ];
 
-// Sélection de la section pour afficher les tâches (Étape 1)
-const taskSection = document.getElementById("task"); 
+// Sélection de la section pour afficher les tâches
+const taskSection = document.getElementById("task");
 
-// Fonction pour afficher les tâches avec tri par priorité (Étape 1 + Bonus 6)
+// Fonction pour afficher les tâches avec tri par priorité
 function displayTasks() {
-    // Trier les tâches par priorité (Bonus 6)
+    // Trier les tâches par priorité (1 = élevée, 3 = basse)
     tasks.sort((a, b) => a.priority - b.priority);
 
     // Réinitialiser l'affichage
     taskSection.innerHTML = '';
 
-    // Affichage de chaque tâche (Étape 1)
+    // Affichage de chaque tâche
     tasks.forEach((task, index) => {
         const li = document.createElement('li');
         const label = document.createElement('label');
@@ -39,7 +39,7 @@ function displayTasks() {
         // Ajout du label dans le <li>
         li.appendChild(label);
 
-        // Ajouter la couleur en fonction de la priorité (Étape 1)
+        // Ajouter la couleur en fonction de la priorité
         if (task.priority === 1) {
             li.classList.add('priority-high');
         } else if (task.priority === 2) {
@@ -53,19 +53,19 @@ function displayTasks() {
     });
 }
 
-// Affichage initial des tâches au chargement de la page (Étape 1)
+// Affichage initial des tâches au chargement de la page
 displayTasks();
 
-// Sélection du formulaire et des champs (Étape 2)
+// Sélection du formulaire et des champs
 const taskForm = document.getElementById("taskForm");
 const taskTitle = document.getElementById("taskTitle");
 const taskPriority = document.getElementById("taskPriority");
 
-// Écouteur d'événement sur le formulaire pour ajouter une tâche (Étape 2)
+// Écouteur d'événement sur le formulaire pour ajouter une tâche
 taskForm.addEventListener('submit', function(event) {
     event.preventDefault(); // Empêche le rechargement de la page
 
-    // Création de la nouvelle tâche à partir du formulaire (Étape 2)
+    // Création de la nouvelle tâche à partir du formulaire
     const newTask = {
         title: taskTitle.value,
         priority: parseInt(taskPriority.value)
@@ -74,26 +74,26 @@ taskForm.addEventListener('submit', function(event) {
     // Ajout de la tâche au tableau tasks
     tasks.push(newTask);
 
-    // Sauvegarder les tâches dans le localStorage (Bonus 7)
+    // Sauvegarder les tâches dans le localStorage
     saveTasksToLocalStorage();
 
-    // Réafficher toutes les tâches triées par priorité (Étape 1 + Bonus 6)
+    // Réafficher toutes les tâches triées par priorité
     displayTasks();
 
-    // Réinitialiser le formulaire (Étape 2)
+    // Réinitialiser le formulaire
     taskForm.reset();
 });
 
-// Sélectionner le bouton de suppression (Étape 3)
+// Sélectionner le bouton de suppression
 const deleteCheckedButton = document.getElementById("deleteChecked");
-// Sélectionner la zone de notification (Bonus 5)
+// Sélectionner la zone de notification
 const notification = document.getElementById("notification");
 
-// Écouteur d'événement sur le bouton de suppression (Étape 3)
+// Écouteur d'événement sur le bouton de suppression
 deleteCheckedButton.addEventListener('click', function() {
     let tasksDeleted = 0;
 
-    // Filtrer les tâches pour ne garder que celles non cochées (Étape 3)
+    // Filtrer les tâches pour ne garder que celles non cochées
     const updatedTasks = [];
 
     Array.from(taskSection.children).forEach((li, index) => {
@@ -109,35 +109,31 @@ deleteCheckedButton.addEventListener('click', function() {
     tasks.length = 0;
     tasks.push(...updatedTasks);
 
-    // Sauvegarder les tâches mises à jour (Bonus 7)
+    // Sauvegarder les tâches mises à jour
     saveTasksToLocalStorage();
 
-    // Réafficher la liste mise à jour (Étape 3)
+    // Réafficher la liste mise à jour
     displayTasks();
 
-    // Notification (Bonus 5)
+    // Notification
     if (tasksDeleted > 0) {
         notification.innerText = `${tasksDeleted} tâche(s) supprimée(s) avec succès.`;
     } else {
         notification.innerText = '';
     }
 
-    // Cacher le message après quelques secondes (Bonus 5)
+    // Cacher le message après quelques secondes
     setTimeout(() => {
         notification.innerText = '';
     }, 3000);
 });
 
-// ---------------------
-// BONUS 7: PERSISTENCE DES TÂCHES AVEC LOCALSTORAGE
-// ---------------------
-
-// Fonction pour sauvegarder les tâches dans le localStorage (Bonus 7)
+// Fonction pour sauvegarder les tâches dans le localStorage
 function saveTasksToLocalStorage() {
     localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
-// Fonction pour récupérer les tâches depuis le localStorage (Bonus 7)
+// Fonction pour récupérer les tâches depuis le localStorage
 function loadTasksFromLocalStorage() {
     const storedTasks = localStorage.getItem('tasks');
     if (storedTasks) {
@@ -146,8 +142,8 @@ function loadTasksFromLocalStorage() {
     }
 }
 
-// Charger les tâches depuis le localStorage au démarrage (Bonus 7)
+// Charger les tâches depuis le localStorage au démarrage
 loadTasksFromLocalStorage();
 
-// Afficher les tâches chargées après le chargement du localStorage (Bonus 7)
+// Afficher les tâches chargées après le chargement du localStorage
 displayTasks();
