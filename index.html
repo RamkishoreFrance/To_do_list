@@ -13,20 +13,28 @@
     </section>
     <section id="add">
         <form id="taskForm">
-            <input type="text" id="taskTitle" placeholder="Nom de la tâche">
+            <input type="text" id="taskTitle" placeholder="Nom de la tâche" required>
             <select id="taskPriority">
                 <option value="1">Élevée</option>
                 <option value="2">Normale</option>
                 <option value="3">Basse</option>
             </select>
-            <button type="submit">Ajouter la tâche</button>
+            <input type="file" id="taskImage" accept="image/*">
         </form>
         
-        <!-- Bouton de suppression des tâches cochées -->
-        <button id="deleteChecked">Supprimer</button>
-    
-    <!-- Zone de notification pour afficher le message -->
-<div id="notification" style="color: green;"></div> 
+        <div class="button-container">
+            <button type="button" id="addTaskButton">Ajouter la tâche</button>
+            <button type="button" id="deleteChecked">Supprimer</button>
+        </div>
+
+        <!-- Barre de recherche -->
+        <div class="search-container">
+            <input type="text" id="searchBar" placeholder="Rechercher une tâche...">
+            <button id="searchButton">🔄</button>
+        </div>
+
+        <!-- Zone de notification -->
+        <div id="notification"></div>
     </section>
     <script src="js/main.js"></script>
 </body>
