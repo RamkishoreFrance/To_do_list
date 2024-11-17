@@ -1,42 +1,63 @@
 // Données initiales des tâches
-const tasks = [
+let tasks = [
     {
         title: "Apprendre mon cours de JavaScript",
-        priority: 1
+        priority: 1,
+        image: null
     },
     {
         title: "Créer mon compte Github",
-        priority: 2
+        priority: 2,
+        image: null
     },
     {
         title: "Répondre à mes emails",
-        priority: 3
+        priority: 3,
+        image: null
     }
 ];
 
-// Sélection de la section pour afficher les tâches
+// Sélection des éléments du DOM
 const taskSection = document.getElementById("task");
+const taskForm = document.getElementById("taskForm");
+const taskTitle = document.getElementById("taskTitle");
+const taskPriority = document.getElementById("taskPriority");
+const taskImage = document.getElementById("taskImage");
+const addTaskButton = document.getElementById("addTaskButton");
+const deleteCheckedButton = document.getElementById("deleteChecked");
+const searchBar = document.getElementById('searchBar');
+const notification = document.getElementById("notification");
 
-// Fonction pour afficher les tâches avec tri par priorité
+// Fonction pour afficher les tâches
 function displayTasks() {
-    // Trier les tâches par priorité (1 = élevée, 3 = basse)
-    tasks.sort((a, b) => a.priority - b.priority);
+    taskSection.innerHTML = '';  // Réinitialiser la section des tâches
 
-    // Réinitialiser l'affichage
-    taskSection.innerHTML = '';
-
-    // Affichage de chaque tâche
     tasks.forEach((task, index) => {
         const li = document.createElement('li');
         const label = document.createElement('label');
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
+        checkbox.dataset.index = index;  // Ajouter un attribut de données pour l'index
 
-        // Ajout de la tâche dans le label 
+        // Ajouter l'image si elle existe
+        if (task.image) {
+            const img = document.createElement('img');
+            img.src = task.image;
+            img.alt = 'Image de la tâche';
+            img.style.width = '50px';
+            img.style.height = '50px';
+            img.style.marginRight = '12px';
+            li.appendChild(img);
+
+            // Ajouter l'événement de zoom sur l'image
+            img.addEventListener('click', () => zoomImage(img));
+        }
+
+        // Ajouter le texte de la tâche dans le label
         label.appendChild(checkbox);
         label.appendChild(document.createTextNode(task.title));
 
-        // Ajout du label dans le <li>
+        // Ajouter le label dans le <li>
         li.appendChild(label);
 
         // Ajouter la couleur en fonction de la priorité
@@ -48,84 +69,55 @@ function displayTasks() {
             li.classList.add('priority-low');
         }
 
-        // Ajout de l'élément <li> dans la section
+        // Ajouter l'élément <li> dans la section
         taskSection.appendChild(li);
     });
 }
 
-// Affichage initial des tâches au chargement de la page
-displayTasks();
+// Fonction pour zoomer sur l'image
+function zoomImage(imgElement) {
+    // Créer un conteneur pour l'image zoomée
+    const zoomedImageContainer = document.createElement('div');
+    zoomedImageContainer.id = 'zoomedImageContainer';
+    
+    // Créer l'élément image dans le conteneur
+    const zoomedImg = document.createElement('img');
+    zoomedImg.src = imgElement.src;
+    zoomedImg.alt = 'Image zoomée';
+    zoomedImageContainer.appendChild(zoomedImg);
+    
+    // Ajouter le conteneur à la page
+    document.body.appendChild(zoomedImageContainer);
 
-// Sélection du formulaire et des champs
-const taskForm = document.getElementById("taskForm");
-const taskTitle = document.getElementById("taskTitle");
-const taskPriority = document.getElementById("taskPriority");
+    // Afficher le conteneur zoomé
+    zoomedImageContainer.style.display = 'flex';
 
-// Écouteur d'événement sur le formulaire pour ajouter une tâche
-taskForm.addEventListener('submit', function(event) {
-    event.preventDefault(); // Empêche le rechargement de la page
+    // Fermer le zoom si on clique sur le conteneur
+    zoomedImageContainer.addEventListener('click', () => {
+        zoomedImageContainer.style.display = 'none';
+        document.body.removeChild(zoomedImageContainer); // Retirer le conteneur de l'écran
+    });
+}
 
-    // Création de la nouvelle tâche à partir du formulaire
+// Fonction pour ajouter une tâche
+addTaskButton.addEventListener('click', function() {
     const newTask = {
         title: taskTitle.value,
-        priority: parseInt(taskPriority.value)
+        priority: parseInt(taskPriority.value),
+        image: taskImage.files[0] ? URL.createObjectURL(taskImage.files[0]) : null
     };
 
-    // Ajout de la tâche au tableau tasks
+    // Ajouter la tâche au tableau tasks
     tasks.push(newTask);
 
-    // Sauvegarder les tâches dans le localStorage
+    // Sauvegarder dans localStorage
     saveTasksToLocalStorage();
 
-    // Réafficher toutes les tâches triées par priorité
+    // Réafficher les tâches
     displayTasks();
 
     // Réinitialiser le formulaire
     taskForm.reset();
-});
-
-// Sélectionner le bouton de suppression
-const deleteCheckedButton = document.getElementById("deleteChecked");
-// Sélectionner la zone de notification
-const notification = document.getElementById("notification");
-
-// Écouteur d'événement sur le bouton de suppression
-deleteCheckedButton.addEventListener('click', function() {
-    let tasksDeleted = 0;
-
-    // Filtrer les tâches pour ne garder que celles non cochées
-    const updatedTasks = [];
-
-    Array.from(taskSection.children).forEach((li, index) => {
-        const checkbox = li.querySelector('input[type="checkbox"]');
-        if (!checkbox.checked) {
-            updatedTasks.push(tasks[index]);
-        } else {
-            tasksDeleted++;
-        }
-    });
-
-    // Mettre à jour le tableau tasks
-    tasks.length = 0;
-    tasks.push(...updatedTasks);
-
-    // Sauvegarder les tâches mises à jour
-    saveTasksToLocalStorage();
-
-    // Réafficher la liste mise à jour
-    displayTasks();
-
-    // Notification
-    if (tasksDeleted > 0) {
-        notification.innerText = `${tasksDeleted} tâche(s) supprimée(s) avec succès.`;
-    } else {
-        notification.innerText = '';
-    }
-
-    // Cacher le message après quelques secondes
-    setTimeout(() => {
-        notification.innerText = '';
-    }, 3000);
 });
 
 // Fonction pour sauvegarder les tâches dans le localStorage
@@ -137,13 +129,158 @@ function saveTasksToLocalStorage() {
 function loadTasksFromLocalStorage() {
     const storedTasks = localStorage.getItem('tasks');
     if (storedTasks) {
-        tasks.length = 0; // Vide le tableau
-        tasks.push(...JSON.parse(storedTasks)); // Charger les tâches depuis le localStorage
+        tasks = JSON.parse(storedTasks); // Charger les tâches depuis le localStorage
     }
 }
 
 // Charger les tâches depuis le localStorage au démarrage
 loadTasksFromLocalStorage();
+displayTasks();
 
-// Afficher les tâches chargées après le chargement du localStorage
+// Fonction de suppression des tâches cochées
+deleteCheckedButton.addEventListener('click', function() {
+    // Filtrer les tâches non cochées
+    tasks = tasks.filter((task, index) => {
+        const checkbox = document.querySelector(`input[type="checkbox"][data-index="${index}"]`);
+        return !checkbox.checked;
+    });
+
+    // Sauvegarder les tâches mises à jour dans le localStorage
+    saveTasksToLocalStorage();
+
+    // Réafficher les tâches restantes
+    displayTasks();
+
+    // Afficher une notification si des tâches ont été supprimées
+    notification.innerText = 'Tâches supprimées avec succès.';
+    setTimeout(() => notification.innerText = '', 3000);  // Cacher la notification après 3 secondes
+});
+
+// Fonction pour rechercher les tâches
+function searchTasks() {
+    const searchQuery = searchBar.value.toLowerCase();
+    const filteredTasks = tasks.filter(task => task.title.toLowerCase().includes(searchQuery));
+
+    // Réinitialiser l'affichage et afficher les tâches filtrées
+    taskSection.innerHTML = '';
+    filteredTasks.forEach((task, index) => {
+        const li = document.createElement('li');
+        const label = document.createElement('label');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.dataset.index = index;
+
+        if (task.image) {
+            const img = document.createElement('img');
+            img.src = task.image;
+            img.alt = 'Image de la tâche';
+            img.style.width = '50px';
+            img.style.height = '50px';
+            img.style.marginRight = '12px';
+            li.appendChild(img);
+
+            // Ajouter l'événement de zoom sur l'image
+            img.addEventListener('click', () => zoomImage(img));
+        }
+
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(task.title));
+        li.appendChild(label);
+
+        if (task.priority === 1) {
+            li.classList.add('priority-high');
+        } else if (task.priority === 2) {
+            li.classList.add('priority-normal');
+        } else {
+            li.classList.add('priority-low');
+        }
+
+        taskSection.appendChild(li);
+    });
+}
+// Fonction pour supprimer les tâches cochées
+deleteCheckedButton.addEventListener('click', function() {
+    const checkboxes = document.querySelectorAll('#task input[type="checkbox"]');
+    const tasksDeleted = [];
+
+    // Parcourir les cases à cocher pour supprimer les tâches sélectionnées
+    checkboxes.forEach((checkbox, index) => {
+        if (checkbox.checked) {
+            tasksDeleted.push(tasks[index].title); // Ajouter le nom de la tâche supprimée
+        }
+    });
+
+    // Filtrer les tâches non cochées et les conserver
+    tasks = tasks.filter((task, index) => !checkboxes[index].checked);
+
+    // Sauvegarder les tâches mises à jour dans le localStorage
+    saveTasksToLocalStorage();
+
+    // Réafficher les tâches restantes
+    displayTasks();
+
+    // Afficher la notification pour les tâches supprimées
+    if (tasksDeleted.length > 0) {
+        showNotification(`Tâche(s) supprimée(s) : ${tasksDeleted.join(', ')}`, 'deleted');
+    } else {
+        showNotification('Aucune tâche sélectionnée pour suppression.', 'deleted');
+    }
+});
+
+// Fonction pour ajouter une tâche
+addTaskButton.addEventListener('click', function() {
+    const newTask = {
+        title: taskTitle.value,
+        priority: parseInt(taskPriority.value),
+        image: taskImage.files[0] ? URL.createObjectURL(taskImage.files[0]) : null
+    };
+
+    // Ajouter la tâche au tableau tasks
+    tasks.push(newTask);
+
+    // Sauvegarder dans le localStorage
+    saveTasksToLocalStorage();
+
+    // Réafficher les tâches
+    displayTasks();
+
+    // Réinitialiser le formulaire
+    taskForm.reset();
+
+    // Afficher la notification pour la tâche ajoutée
+    showNotification(`Tâche ajoutée : ${newTask.title}`, 'added');
+});
+
+// Afficher la notification
+function showNotification(message, type) {
+    notification.innerText = message;
+    notification.className = ''; // Réinitialiser les classes
+
+    if (type === 'added') {
+        notification.classList.add('added');
+    } else if (type === 'deleted') {
+        notification.classList.add('deleted');
+    }
+
+    notification.classList.add('show');
+
+    // Masquer la notification après 3 secondes
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 3000);
+}
+
+// Sauvegarder et charger les tâches
+function saveTasksToLocalStorage() {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+function loadTasksFromLocalStorage() {
+    const storedTasks = localStorage.getItem('tasks');
+    if (storedTasks) {
+        tasks = JSON.parse(storedTasks);
+    }
+}
+
+loadTasksFromLocalStorage();
 displayTasks();
